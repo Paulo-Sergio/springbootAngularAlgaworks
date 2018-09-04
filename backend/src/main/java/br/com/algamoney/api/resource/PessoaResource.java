@@ -17,37 +17,37 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import br.com.algamoney.api.event.RecursoCriadoEvent;
-import br.com.algamoney.api.model.Categoria;
-import br.com.algamoney.api.repository.CategoriaRepository;
+import br.com.algamoney.api.model.Pessoa;
+import br.com.algamoney.api.repository.PessoaRepository;
 
 @RestController
-@RequestMapping("/categorias")
-public class CategoriaResource {
+@RequestMapping("/pessoas")
+public class PessoaResource {
 
 	@Autowired
-	private CategoriaRepository categoriaRepository;
-	
+	private PessoaRepository pessoaRepository;
+
 	@Autowired
 	private ApplicationEventPublisher publisher;
 
 	@GetMapping
-	public List<Categoria> listar() {
-		List<Categoria> categorias = this.categoriaRepository.findAll();
-		return categorias;
+	public List<Pessoa> listar() {
+		List<Pessoa> pessoas = this.pessoaRepository.findAll();
+		return pessoas;
 	}
 
 	@PostMapping
-	public ResponseEntity<Categoria> criar(@Valid @RequestBody Categoria categoria, HttpServletResponse response) {
-		Categoria categoriaSalva = this.categoriaRepository.save(categoria);
+	public ResponseEntity<Pessoa> criar(@Valid @RequestBody Pessoa pessoa, HttpServletResponse response) {
+		Pessoa pessoaSalva = this.pessoaRepository.save(pessoa);
 
-		this.publisher.publishEvent(new RecursoCriadoEvent(this, response, categoriaSalva.getCodigo()));
+		this.publisher.publishEvent(new RecursoCriadoEvent(this, response, pessoaSalva.getCodigo()));
 
-		return ResponseEntity.status(HttpStatus.CREATED).body(categoriaSalva);
+		return ResponseEntity.status(HttpStatus.CREATED).body(pessoaSalva);
 	}
 
 	@GetMapping("/{codigo}")
-	public Categoria buscarPeloCodigo(@PathVariable Long codigo) {
-		Categoria categoria = this.categoriaRepository.findOne(codigo);
-		return categoria;
+	public Pessoa buscarPeloCodigo(@PathVariable Long codigo) {
+		Pessoa pessoa = this.pessoaRepository.findOne(codigo);
+		return pessoa;
 	}
 }
