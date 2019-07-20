@@ -30,8 +30,8 @@ public class PessoaResource {
 
 	@Autowired
 	private PessoaRepository pessoaRepository;
-	
-	@Autowired 
+
+	@Autowired
 	private PessoaService pessoaService;
 
 	@Autowired
@@ -53,9 +53,9 @@ public class PessoaResource {
 	}
 
 	@GetMapping("/{codigo}")
-	public Pessoa buscarPeloCodigo(@PathVariable Long codigo) {
+	public ResponseEntity<Pessoa> buscarPeloCodigo(@PathVariable Long codigo) {
 		Pessoa pessoa = this.pessoaRepository.findOne(codigo);
-		return pessoa;
+		return pessoa != null ? ResponseEntity.ok(pessoa) : ResponseEntity.notFound().build();
 	}
 
 	@DeleteMapping("/{codigo}")
@@ -70,7 +70,7 @@ public class PessoaResource {
 
 		return ResponseEntity.status(HttpStatus.OK).body(pessoaSalva);
 	}
-	
+
 	@PutMapping("/{codigo}/ativo")
 	@ResponseStatus(HttpStatus.NO_CONTENT)
 	public void atualizarPropriedadeAtivo(@PathVariable Long codigo, @RequestBody Boolean ativo) {
