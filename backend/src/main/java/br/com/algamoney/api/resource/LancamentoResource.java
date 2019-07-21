@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 import br.com.algamoney.api.event.RecursoCriadoEvent;
 import br.com.algamoney.api.model.Lancamento;
 import br.com.algamoney.api.repository.LancamentoRepository;
+import br.com.algamoney.api.service.LancamentoService;
 
 @RestController
 @RequestMapping("/lancamentos")
@@ -27,6 +28,9 @@ public class LancamentoResource {
 	@Autowired
 	private LancamentoRepository lancamentoRepository;
 	
+	@Autowired
+	private LancamentoService lancamentoService;
+
 	@Autowired
 	private ApplicationEventPublisher publisher;
 
@@ -39,20 +43,21 @@ public class LancamentoResource {
 	@GetMapping("/{codigo}")
 	public ResponseEntity<Lancamento> buscarPeloCodigo(@PathVariable Long codigo) {
 		Lancamento lancamento = this.lancamentoRepository.findOne(codigo);
-		if (lancamento != null) {
-			return ResponseEntity.status(HttpStatus.OK).body(lancamento);
-		} else {
+		if (lancamento == null) {
 			return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
 		}
+		return ResponseEntity.status(HttpStatus.OK).body(lancamento);
 	}
-	
+
 	@PostMapping
 	public ResponseEntity<Lancamento> criar(@Valid @RequestBody Lancamento lancamento, HttpServletResponse response) {
-		Lancamento lancamentoSalvo = this.lancamentoRepository.save(lancamento);
-		
+		Lancamento lancamentoSalvo = this.lancamentoService.salvar(lancamento);
+
 		this.publisher.publishEvent(new RecursoCriadoEvent(this, response, lancamentoSalvo.getCodigo()));
-		
+
 		return ResponseEntity.status(HttpStatus.CREATED).body(lancamentoSalvo);
 	}
+	
+	
 
 }
